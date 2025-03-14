@@ -9,10 +9,19 @@ def initialize(dimentions):
 
     return parameters
 
-def model(X,W,b):
-    Z=X.dot(W)+b
-    A=1/(1+np.exp(-Z))
-    return A
+def segmoid(Z):
+        return 1/(1+np.exp(-Z))
+
+
+def forward_propagation(X,paramaters):
+    activation={"A0":X}
+    C=len(paramaters)//2
+
+    for c in range(1,C+1):
+      Z=paramaters["W"+str(c)].dot(activation["A"+str(c-1)])+paramaters["b"+str(c)]
+      activation["A"+str(c)]=segmoid(Z)
+
+    return activation
 
 def function_cout(A,y):
     return 1/len(y)*np.sum(-y*np.log(A)-(1-y)*np.log(1-A))
@@ -21,3 +30,8 @@ def gradients(A,X,y):
     dW=1/len(y)*np.dot(X.T,A-y)
     db=1/len(y)*np.sum(A-y)
     return(dW,db)
+
+
+
+
+ 
