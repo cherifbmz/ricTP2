@@ -1,9 +1,13 @@
 import numpy as np
 
-def initialize(X):
-    W=np.random.randn(X.shape[1],1)
-    b=np.random.randn(1)
-    return (W,b)
+def initialize(dimentions):
+    parameters={}
+    C=len (dimentions)
+    for c in range(1,C):
+        parameters['W'+str(c)]=np.random.randn(dimentions[c],dimentions[c-1])
+        parameters["b"+str(c)]=np.random.randn(dimentions[c],1)
+
+    return parameters
 
 def model(X,W,b):
     Z=X.dot(W)+b
