@@ -91,12 +91,25 @@ def train_mlp(X, y, hidden_layers, learning_rate=0.1, n_iter=1000):
     return parameters
     
 
-X = np.array([[0, 0, 1, 1], [0, 1, 0, 1]])
-y = np.array([[0, 1, 1, 0]])
-parameters = train_mlp(X, y, hidden_layers=(4, 4), learning_rate=0.1, n_iter=5000)
+#X = np.array([[0, 0, 1, 1], [0, 1, 0, 1]])
+#y = np.array([[0, 1, 1, 0]])
+#parameters = train_mlp(X, y, hidden_layers=(4, 4), learning_rate=0.1, n_iter=5000)
+#y_pred= predict(X, parameters)
+#print("Predictions:", y_pred.flatten())
+#print("Actual:", y.flatten())
+#print("Accuracy:", accuracy_score(y.flatten(), y_pred.flatten()))
+
+data=np.loadtxt("recTp/data.txt")
+print(data)
+
+X=data[:,:-1].T
+print(X)
+Y=data[:,-1].reshape(1, -1)
+
+print(Y)
+
+parameters=train_mlp(X,Y,hidden_layers=(4,4),learning_rate=0.1,n_iter=1000)
 y_pred= predict(X, parameters)
 print("Predictions:", y_pred.flatten())
-print("Actual:", y.flatten())
-print("Accuracy:", accuracy_score(y.flatten(), y_pred.flatten()))
-
-
+print("Actual:", Y.flatten())
+print("Accuracy:", accuracy_score(Y.flatten(), y_pred.flatten()))
