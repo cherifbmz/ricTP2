@@ -10,6 +10,7 @@ def initialize(dimentions):
     for c in range(1,C):
         parameters['W'+str(c)]=np.random.randn(dimentions[c],dimentions[c-1])
         parameters["b"+str(c)]=np.random.randn(dimentions[c],1)
+    
 
     return parameters
 
@@ -97,3 +98,5 @@ y_pred= predict(X, parameters)
 print("Predictions:", y_pred.flatten())
 print("Actual:", y.flatten())
 print("Accuracy:", accuracy_score(y.flatten(), y_pred.flatten()))
+
+
