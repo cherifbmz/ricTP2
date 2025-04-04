@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
 
 def initialize(dimentions):
     parameters={}
@@ -108,8 +109,21 @@ Y=data[:,-1].reshape(1, -1)
 
 print(Y)
 
-parameters=train_mlp(X,Y,hidden_layers=(4,4),learning_rate=0.1,n_iter=1000)
-y_pred= predict(X, parameters)
-print("Predictions:", y_pred.flatten())
-print("Actual:", Y.flatten())
-print("Accuracy:", accuracy_score(Y.flatten(), y_pred.flatten()))
+X_training,Xtest,Y_training,Ytest=train_test_split(X.T,Y.T,test_size=0.2,random_state=1)
+X_training=X_training.T
+Y_training=Y_training.T
+Xtest=Xtest.T
+Ytest=Ytest.T
+
+parameters=train_mlp(X_training,Y_training,hidden_layers=(4,4),learning_rate=0.1,n_iter=1000)
+
+ytraining_pred= predict(X_training, parameters)
+ytest_pred=predict(Xtest,parameters)
+
+print("Predictions on the training set:", ytraining_pred.flatten())
+print("Actual:", Y_training.flatten())
+print("Accuracy:", accuracy_score(Y_training.flatten(), ytraining_pred.flatten()))
+
+print("Predictions on the test set:", ytest_pred.flatten())
+print("Actual:", Ytest.flatten())
+print("Accuracy:", accuracy_score(Ytest.flatten(), ytest_pred.flatten()))
