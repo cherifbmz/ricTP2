@@ -120,10 +120,40 @@ parameters=train_mlp(X_training,Y_training,hidden_layers=(4,4),learning_rate=0.1
 ytraining_pred= predict(X_training, parameters)
 ytest_pred=predict(Xtest,parameters)
 
-print("Predictions on the training set:", ytraining_pred.flatten())
+print("Predictions on the training set befor opitmization :", ytraining_pred.flatten())
 print("Actual:", Y_training.flatten())
 print("Accuracy:", accuracy_score(Y_training.flatten(), ytraining_pred.flatten()))
 
-print("Predictions on the test set:", ytest_pred.flatten())
+print("Predictions on the test set before optimization :", ytest_pred.flatten())
+print("Actual:", Ytest.flatten())
+print("Accuracy:", accuracy_score(Ytest.flatten(), ytest_pred.flatten()))
+
+
+
+
+x = data[:, 0]
+y = data[:, 1]
+z = data[:, 2]
+r = np.sqrt(x ** 2 + y ** 2)
+
+X = np.vstack((r, z)).T
+X = X.T
+
+X_training,Xtest,Y_training,Ytest=train_test_split(X.T,Y.T,test_size=0.2,random_state=1)
+X_training=X_training.T
+Y_training=Y_training.T
+Xtest=Xtest.T
+Ytest=Ytest.T
+
+parameters=train_mlp(X_training,Y_training,hidden_layers=(4,4),learning_rate=0.1,n_iter=1000)
+
+ytraining_pred= predict(X_training, parameters)
+ytest_pred=predict(Xtest,parameters)
+
+print("Predictions on the training set after optimization:", ytraining_pred.flatten())
+print("Actual:", Y_training.flatten())
+print("Accuracy:", accuracy_score(Y_training.flatten(), ytraining_pred.flatten()))
+
+print("Predictions on the test set after optimization :", ytest_pred.flatten())
 print("Actual:", Ytest.flatten())
 print("Accuracy:", accuracy_score(Ytest.flatten(), ytest_pred.flatten()))
