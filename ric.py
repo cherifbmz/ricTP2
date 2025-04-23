@@ -115,7 +115,7 @@ Y_training=Y_training.T
 Xtest=Xtest.T
 Ytest=Ytest.T
 
-parameters=train_mlp(X_training,Y_training,hidden_layers=(4,4),learning_rate=0.1,n_iter=1000)
+parameters=train_mlp(X_training,Y_training,hidden_layers=(16,16,16),learning_rate=1,n_iter=10000)
 
 ytraining_pred= predict(X_training, parameters)
 ytest_pred=predict(Xtest,parameters)
@@ -128,7 +128,25 @@ print("Predictions on the test set before optimization :", ytest_pred.flatten())
 print("Actual:", Ytest.flatten())
 print("Accuracy:", accuracy_score(Ytest.flatten(), ytest_pred.flatten()))
 
+def plot_3d_predictions(Xtest, Ytest, ytest_pred):
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection='3d')
 
+    Xtest = Xtest.T  
+    Ytest = Ytest.flatten()
+    ytest_pred = ytest_pred.flatten()
+
+    for i in range(Xtest.shape[0]):
+        color = 'green' if ytest_pred[i] == 0 else 'red'
+        ax.scatter(Xtest[i, 0], Xtest[i, 1], Xtest[i, 2], c=color, s=5)
+
+    ax.set_xlabel('Feature 1')
+    ax.set_ylabel('Feature 2')
+    ax.set_zlabel('Feature 3')
+    ax.set_title('3D Predictions: Green=Correct, Red=Incorrect')
+    plt.show()
+
+plot_3d_predictions(Xtest, Ytest, ytest_pred)
 
 
 x = data[:, 0]
@@ -145,7 +163,7 @@ Y_training=Y_training.T
 Xtest=Xtest.T
 Ytest=Ytest.T
 
-parameters=train_mlp(X_training,Y_training,hidden_layers=(4,4),learning_rate=0.1,n_iter=1000)
+parameters=train_mlp(X_training,Y_training,hidden_layers=(16,16,16),learning_rate=1,n_iter=10000)
 
 ytraining_pred= predict(X_training, parameters)
 ytest_pred=predict(Xtest,parameters)
