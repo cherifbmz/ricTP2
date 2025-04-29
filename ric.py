@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
+import os 
+import pickle
 
 def initialize(dimentions):
     parameters={}
@@ -90,7 +92,34 @@ def train_mlp(X, y, hidden_layers, learning_rate=0.1, n_iter=1000):
     ax[1].legend()
     plt.show()
     return parameters
+
+
+def save_parameters(parameters, filename='model_parameters.pkl'):
     
+    with open(filename, 'wb') as f:
+        pickle.dump(parameters, f)
+    print("Model parameters saved in ",filename)
+
+def load_parameters(filename='model_parameters.pkl'):
+    if os.path.exists(filename):
+        with open(filename, 'rb') as f:
+            parameters = pickle.load(f)
+        print("Model parameters loaded from ",filename)
+        return parameters
+    else:
+        print(filename," not found.")
+        return None
+
+def train_or_load_model(X, y, hidden_layers, filename='model_parameters.pkl', 
+                        force_train=False, learning_rate=0.1, n_iter=1000):
+    if not force_train and os.path.exists(filename):
+        print("Loading existing model from ",filename)
+        return load_parameters(filename)
+    else:
+        print("Training new model...")
+        parameters = train_mlp(X, y, hidden_layers, learning_rate, n_iter)
+        save_parameters(parameters, filename)
+        return parameters
 
 #X = np.array([[0, 0, 1, 1], [0, 1, 0, 1]])
 #y = np.array([[0, 1, 1, 0]])
@@ -115,8 +144,15 @@ Y_training=Y_training.T
 Xtest=Xtest.T
 Ytest=Ytest.T
 
-parameters=train_mlp(X_training,Y_training,hidden_layers=(16,16,16),learning_rate=1,n_iter=10000)
-
+parameters = train_or_load_model(
+        X_training, 
+        Y_training, 
+        hidden_layers=(16, 16, 16),
+        filename='recTp/original_model.pkl',
+        force_train=False,  
+        learning_rate=1, 
+        n_iter=10000
+    )
 ytraining_pred= predict(X_training, parameters)
 ytest_pred=predict(Xtest,parameters)
 
@@ -163,11 +199,17 @@ Y_training=Y_training.T
 Xtest=Xtest.T
 Ytest=Ytest.T
 
-parameters=train_mlp(X_training,Y_training,hidden_layers=(16,16,16),learning_rate=1,n_iter=10000)
-
-ytraining_pred= predict(X_training, parameters)
-ytest_pred=predict(Xtest,parameters)
-
+RowZ_parameters = train_or_load_model(
+        X_training, 
+        Y_training, 
+        hidden_layers=(16, 16, 16),
+        filename='recTp/RowZ_model.pkl',
+        force_train=False, 
+        learning_rate=1, 
+        n_iter=10000
+    )
+ytraining_pred = predict(X_training, RowZ_parameters)
+ytest_pred = predict(Xtest, RowZ_parameters)
 print("Predictions on the training set after optimization:", ytraining_pred.flatten())
 print("Actual:", Y_training.flatten())
 print("Accuracy:", accuracy_score(Y_training.flatten(), ytraining_pred.flatten()))
