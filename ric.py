@@ -129,7 +129,7 @@ def train_or_load_model(X, y, hidden_layers, filename='model_parameters.pkl',
 #print("Actual:", y.flatten())
 #print("Accuracy:", accuracy_score(y.flatten(), y_pred.flatten()))
 
-data=np.loadtxt("recTp/data.txt")
+data=np.loadtxt("data.txt")
 print(data)
 
 X=data[:,:-1].T
@@ -148,7 +148,7 @@ parameters = train_or_load_model(
         X_training, 
         Y_training, 
         hidden_layers=(16, 16, 16),
-        filename='recTp/original_model.pkl',
+        filename='original_model.pkl',
         force_train=False,  
         learning_rate=1, 
         n_iter=10000
@@ -203,7 +203,7 @@ RowZ_parameters = train_or_load_model(
         X_training, 
         Y_training, 
         hidden_layers=(16, 16, 16),
-        filename='recTp/RowZ_model.pkl',
+        filename='RowZ_model.pkl',
         force_train=False, 
         learning_rate=1, 
         n_iter=10000

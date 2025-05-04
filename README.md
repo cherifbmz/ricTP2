@@ -5,3 +5,4 @@ Ce projet vise à générer la forme d’un vase en 3D en entraînant un Percept
 16/03 : XOR done 
 04/06 : Training on  3D shape done (youtube assisted)
 20/04 : 3d classification done (83%), no 3d visualisation
+04/04 : 99.14%
