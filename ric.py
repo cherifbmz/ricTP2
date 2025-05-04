@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
+import os 
+import pickle
 
 def initialize(dimentions):
     parameters={}
@@ -90,7 +92,34 @@ def train_mlp(X, y, hidden_layers, learning_rate=0.1, n_iter=1000):
     ax[1].legend()
     plt.show()
     return parameters
+
+
+def save_parameters(parameters, filename='model_parameters.pkl'):
     
+    with open(filename, 'wb') as f:
+        pickle.dump(parameters, f)
+    print("Model parameters saved in ",filename)
+
+def load_parameters(filename='model_parameters.pkl'):
+    if os.path.exists(filename):
+        with open(filename, 'rb') as f:
+            parameters = pickle.load(f)
+        print("Model parameters loaded from ",filename)
+        return parameters
+    else:
+        print(filename," not found.")
+        return None
+
+def train_or_load_model(X, y, hidden_layers, filename='model_parameters.pkl', 
+                        force_train=False, learning_rate=0.1, n_iter=1000):
+    if not force_train and os.path.exists(filename):
+        print("Loading existing model from ",filename)
+        return load_parameters(filename)
+    else:
+        print("Training new model...")
+        parameters = train_mlp(X, y, hidden_layers, learning_rate, n_iter)
+        save_parameters(parameters, filename)
+        return parameters
 
 #X = np.array([[0, 0, 1, 1], [0, 1, 0, 1]])
 #y = np.array([[0, 1, 1, 0]])
@@ -115,15 +144,76 @@ Y_training=Y_training.T
 Xtest=Xtest.T
 Ytest=Ytest.T
 
-parameters=train_mlp(X_training,Y_training,hidden_layers=(4,4),learning_rate=0.1,n_iter=1000)
-
+parameters = train_or_load_model(
+        X_training, 
+        Y_training, 
+        hidden_layers=(16, 16, 16),
+        filename='recTp/original_model.pkl',
+        force_train=False,  
+        learning_rate=1, 
+        n_iter=10000
+    )
 ytraining_pred= predict(X_training, parameters)
 ytest_pred=predict(Xtest,parameters)
 
-print("Predictions on the training set:", ytraining_pred.flatten())
+print("Predictions on the training set befor opitmization :", ytraining_pred.flatten())
 print("Actual:", Y_training.flatten())
 print("Accuracy:", accuracy_score(Y_training.flatten(), ytraining_pred.flatten()))
 
-print("Predictions on the test set:", ytest_pred.flatten())
+print("Predictions on the test set before optimization :", ytest_pred.flatten())
+print("Actual:", Ytest.flatten())
+print("Accuracy:", accuracy_score(Ytest.flatten(), ytest_pred.flatten()))
+
+def plot_3d_predictions(Xtest, Ytest, ytest_pred):
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection='3d')
+
+    Xtest = Xtest.T  
+    Ytest = Ytest.flatten()
+    ytest_pred = ytest_pred.flatten()
+
+    for i in range(Xtest.shape[0]):
+        color = 'green' if ytest_pred[i] == 0 else 'red'
+        ax.scatter(Xtest[i, 0], Xtest[i, 1], Xtest[i, 2], c=color, s=5)
+
+    ax.set_xlabel('Feature 1')
+    ax.set_ylabel('Feature 2')
+    ax.set_zlabel('Feature 3')
+    ax.set_title('3D Predictions: Green=Correct, Red=Incorrect')
+    plt.show()
+
+plot_3d_predictions(Xtest, Ytest, ytest_pred)
+
+
+x = data[:, 0]
+y = data[:, 1]
+z = data[:, 2]
+r = np.sqrt(x ** 2 + y ** 2)
+
+X = np.vstack((r, z)).T
+X = X.T
+
+X_training,Xtest,Y_training,Ytest=train_test_split(X.T,Y.T,test_size=0.2,random_state=1)
+X_training=X_training.T
+Y_training=Y_training.T
+Xtest=Xtest.T
+Ytest=Ytest.T
+
+RowZ_parameters = train_or_load_model(
+        X_training, 
+        Y_training, 
+        hidden_layers=(16, 16, 16),
+        filename='recTp/RowZ_model.pkl',
+        force_train=False, 
+        learning_rate=1, 
+        n_iter=10000
+    )
+ytraining_pred = predict(X_training, RowZ_parameters)
+ytest_pred = predict(Xtest, RowZ_parameters)
+print("Predictions on the training set after optimization:", ytraining_pred.flatten())
+print("Actual:", Y_training.flatten())
+print("Accuracy:", accuracy_score(Y_training.flatten(), ytraining_pred.flatten()))
+
+print("Predictions on the test set after optimization :", ytest_pred.flatten())
 print("Actual:", Ytest.flatten())
 print("Accuracy:", accuracy_score(Ytest.flatten(), ytest_pred.flatten()))
